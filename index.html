@@ -44,23 +44,7 @@
           </div>
 
           <div class="cards__list">
-            <div class="card vertical" ontouchstart="this.classList.toggle('hover');">
-              <div class="card__container">
-                <div class="card__front">
-                  <p>Ronny Wieckardt</p>
-                  <p>Digital Designer</p>
-                  <p>
-                    <a href="mailto:ronny@allthis.digital">ronny@allthis.digital</a><br />
-                    <a href="https://allthis.digital">allthis.digital</a>
-                  </p>
-                </div>
-                <div class="card__back">
-               
-                </div> 
-              </div>
-            </div>
-
-            
+            <!-- Cards will be dynamically generated here -->
           </div>
         </div>
         <div class="middle__bottom">
@@ -94,34 +78,156 @@
   </footer>
 
   <script>
-    // set current year
-    document.getElementById('year').textContent = new Date().getFullYear();
+    // Contact data
+    const contactsData = [
+      {
+        name: 'Ronny Wieckardt',
+        title: 'Digital Designer',
+        email: 'ronny@allthis.digital',
+        website: 'allthis.digital',
+        websiteUrl: 'https://allthis.digital',
+        notes: 'Creative director & interaction designer'
+      },
+      {
+        name: 'Jane Smith',
+        title: 'Product Manager',
+        email: 'jane@example.com',
+        website: 'example.com',
+        websiteUrl: 'https://example.com',
+        notes: 'Leading product innovation'
+      },
+      {
+        name: 'John Developer',
+        title: 'Full Stack Engineer',
+        email: 'john@example.com',
+        website: 'johndeveloper.dev',
+        websiteUrl: 'https://johndeveloper.dev',
+        notes: 'Building scalable solutions'
+      }
+    ];
 
-    // card scroll flip functionality
-    let scrollVelocity = 0;
-    const cards = document.querySelectorAll('.card');
-    
-    document.addEventListener('wheel', (e) => {
-      e.preventDefault();
+    // Generate cards from JSON data
+    function renderCards(contacts) {
+      const cardsList = document.querySelector('.cards__list');
+      cardsList.innerHTML = '';
       
-      // positive deltaY = scroll down, negative = scroll up
-      scrollVelocity = e.deltaY;
-      
-      cards.forEach(card => {
-        const container = card.querySelector('.card__container');
+      contacts.forEach((contact, index) => {
+        const card = document.createElement('div');
+        card.className = 'card vertical';
+        card.ontouchstart = function() { this.classList.toggle('hover'); };
         
-        // scroll down = flip down (rotateX positive), scroll up = flip up (rotateX negative)
-        if (scrollVelocity > 0) {
-          // scroll down
-          card.classList.remove('scroll-up');
-          card.classList.add('scroll-down');
-        } else if (scrollVelocity < 0) {
-          // scroll up
-          card.classList.remove('scroll-down');
-          card.classList.add('scroll-up');
-        }
+        card.innerHTML = `
+          <div class="card__container">
+            <div class="card__front">
+              <p><strong>${contact.name}</strong></p>
+              <p>${contact.title}</p>
+              <p>
+                <a href="mailto:${contact.email}">${contact.email}</a><br />
+                <a href="${contact.websiteUrl}">${contact.website}</a>
+              </p>
+            </div>
+            <div class="card__back">
+              <p><strong>${contact.name}</strong></p>
+              <p>${contact.notes}</p>
+            </div>
+          </div>
+        `;
+        
+        // position stacked cards with slight vertical offset and set z-index
+        card.style.top = `${index * 8}px`;
+        card.style.zIndex = `${contacts.length - index}`;
+
+        // store index for reference
+        card.dataset.index = index;
+
+        cardsList.appendChild(card);
       });
-    }, { passive: false });
+      
+      // Re-attach scroll event listener to new cards and ensure initial state
+      attachScrollListener();
+    }
+
+    // Attach scroll event listener and implement rolodex rotation
+    function attachScrollListener() {
+      const cardsList = document.querySelector('.cards__list');
+      let isAnimating = false;
+
+      // remove any previous handler then attach
+      document.removeEventListener('wheel', wheelHandler);
+      document.addEventListener('wheel', wheelHandler, { passive: false });
+
+      function wheelHandler(e) {
+        e.preventDefault();
+        if (isAnimating) return;
+
+        const delta = e.deltaY;
+        if (delta > 0) {
+          // scroll down -> flip top card away and move it to bottom
+          const topCard = cardsList.querySelector('.card');
+          if (!topCard) return;
+          isAnimating = true;
+          topCard.classList.add('scroll-down');
+
+          const container = topCard.querySelector('.card__container');
+          const onEnd = (ev) => {
+            if (ev.target !== container) return;
+            container.removeEventListener('transitionend', onEnd);
+            // reset state and move card to bottom
+            topCard.classList.remove('scroll-down');
+            cardsList.appendChild(topCard);
+            // reflow positions
+            updateStackPositions();
+            isAnimating = false;
+          };
+
+          container.addEventListener('transitionend', onEnd);
+        } else if (delta < 0) {
+          // scroll up -> bring last card to top and flip it into view
+          const lastCard = cardsList.lastElementChild;
+          if (!lastCard) return;
+          isAnimating = true;
+
+          // prepare card as pre-flipped (instant, no transition)
+          lastCard.classList.add('pre-flip');
+          // move to top
+          cardsList.prepend(lastCard);
+          updateStackPositions();
+
+          // force reflow so the no-transition state applies
+          // then remove pre-flip to animate to front
+          requestAnimationFrame(() => {
+            // allow transition to run by forcing reflow then removing class
+            requestAnimationFrame(() => {
+              lastCard.classList.remove('pre-flip');
+              const container = lastCard.querySelector('.card__container');
+              const onEnd = (ev) => {
+                if (ev.target !== container) return;
+                container.removeEventListener('transitionend', onEnd);
+                isAnimating = false;
+              };
+              container.addEventListener('transitionend', onEnd);
+            });
+          });
+        }
+      }
+
+      function updateStackPositions() {
+        const cards = Array.from(cardsList.querySelectorAll('.card'));
+        cards.forEach((card, idx) => {
+          card.style.top = `${idx * 8}px`;
+          card.style.zIndex = `${cards.length - idx}`;
+        });
+      }
+
+      // expose update for initial layout
+      updateStackPositions();
+    }
+
+    // Initialize
+    document.addEventListener('DOMContentLoaded', () => {
+      document.getElementById('year').textContent = new Date().getFullYear();
+      renderCards(contactsData);
+    });
   </script>
 </body>
 </html>

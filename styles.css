@@ -188,15 +188,38 @@ h2 {
 
 /* entire container, keeps perspective */
 .cards__list {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+  position: relative;
   width: 90%;
+  height: 220px; /* space for stacked cards */
   margin-top: 3rem;
 }
 .cards,
 .card {
   perspective: 1000px;
+}
+
+/* stacked card layout */
+.cards__list .card {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 90%;
+  pointer-events: auto;
+}
+
+/* small visual offset for stacked look; top is set inline per card in JS */
+.cards__list .card .card__container {
+  transform-origin: 50% 0; /* flip from top edge for rolodex feel */
+}
+
+/* flipped state for scroll-down (card flips away) */
+.card.scroll-down .card__container {
+  transform: rotateX(-180deg);
+}
+
+/* default front state */
+.card.scroll-up .card__container {
+  transform: rotateX(0deg);
 }
 /* flip the pane when hovered */
 .card:hover .card__container,
