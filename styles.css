@@ -1,27 +1,84 @@
+/* Modern CSS Reset */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+img,
+picture,
+video,
+canvas,
+svg {
+  display: block;
+  max-width: 100%;
+}
+
+input,
+button,
+textarea,
+select {
+  font: inherit;
+}
+
+p,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  overflow-wrap: break-word;
+}
+
+button {
+  cursor: pointer;
+  border: none;
+  background: none;
+}
+
 body {
   background-color: #e3e2e8;
   color: #19362b;
   display: flex;
   flex-direction: column;
   align-items: center;
+  font-family: Bahnschrift, "DIN Alternate", "Franklin Gothic Medium",
+    "Nimbus Sans Narrow", sans-serif-condensed, sans-serif;
+  font-weight: normal;
+}
+.img {
+  width: 100%;
+  height: auto;
+}
+
+a {
+  color: #19362b;
+  text-decoration: none;
+  border-bottom: 1px dotted #19362b;
 }
 
 header {
-  padding: 4rem 0 6rem 0;
+  padding: 3rem 0 4rem 0;
 }
 h1 {
   position: absolute;
-  top: 0;
+  top: 6rem;
   left: 0;
   z-index: -1;
-  font-size: 20vw;
   text-align: center;
   width: 100%;
-  text-transform: uppercase;
-  font-family: Inter, Roboto, "Helvetica Neue", "Arial Nova", "Nimbus Sans",
-    Arial, sans-serif;
-  font-weight: 200;
-  letter-spacing: 0.25rem;
+  padding: 0 5%;
+  box-sizing: border-box;
 }
 
 h2 {
@@ -53,6 +110,7 @@ h2 {
   width: 24rem;
 }
 .middle__top {
+  position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -60,8 +118,8 @@ h2 {
   border-radius: 2.5rem 2.5rem 0 0;
   background: linear-gradient(
     180deg,
-    #453d2e 41.33%,
-    #554635 41.34%,
+    #292621 41.33%,
+    #010101 41.34%,
     #010101 71.62%,
     #3d2b1d 71.63%
   );
@@ -69,6 +127,7 @@ h2 {
   margin: 0 auto;
 }
 .middle__bottom {
+  position: relative;
   width: 100%;
   height: 4rem;
   background: linear-gradient(
@@ -77,6 +136,54 @@ h2 {
       rgba(0, 0, 0, 0.2) 100%
     ),
     #4e4232;
+
+  background-image: url("assets/img/shading.png");
+  backgroun-position: center center;
+  background0-repeat: no-repeat;
+}
+
+.middle__bottom__branding {
+  display: flex;
+  padding: 0.75rem 1.5rem 1rem 1.5rem;
+  align-items: flex-start;
+  gap: 0.5rem;
+  position: absolute;
+  left: 5.8125rem;
+  bottom: -1.18719rem;
+
+  border-radius: 0 0 2rem 2rem;
+  background: linear-gradient(
+      0deg,
+      rgba(0, 0, 0, 0.2) 0%,
+      rgba(0, 0, 0, 0.2) 100%
+    ),
+    #373027;
+  box-shadow: 0 12px 0 0 #100c00, -2px -2px 0 0 rgba(255, 255, 255, 0.25) inset;
+  overflow: hidden;
+}
+
+.card__ring {
+  position: absolute;
+  left: 9.5rem;
+  top: 12rem;
+  display: flex;
+  width: 5.25rem;
+  justify-content: space-between;
+  align-items: center;
+  z-index: 5;
+}
+.card__ring__inner {
+  width: 0.75rem;
+  height: 4rem;
+  flex-shrink: 0;
+  border-radius: 2.5rem;
+  background: linear-gradient(
+    180deg,
+    #323232 35.09%,
+    #000 35.1%,
+    #181717 65.37%,
+    #232222 65.38%
+  );
 }
 
 /* entire container, keeps perspective */
@@ -103,7 +210,9 @@ h2 {
   width: 100%;
   height: 180px;
 }
-
+.card__front {
+  padding: 1.5rem;
+}
 .vertical.card {
   position: relative;
 }
@@ -126,7 +235,7 @@ h2 {
 
 /* flip speed goes here */
 .card__container {
-  transition: 0.6s;
+  transition: 0.3s cubic-bezier(0.33, 1, 0.68, 1);
   transform-style: preserve-3d;
 
   position: relative;
