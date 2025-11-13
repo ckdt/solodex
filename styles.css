@@ -1,0 +1,312 @@
+body {
+  background-color: #e3e2e8;
+  color: #19362b;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+header {
+  padding: 4rem 0 6rem 0;
+}
+h1 {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: -1;
+  font-size: 20vw;
+  text-align: center;
+  width: 100%;
+  text-transform: uppercase;
+  font-family: Inter, Roboto, "Helvetica Neue", "Arial Nova", "Nimbus Sans",
+    Arial, sans-serif;
+  font-weight: 200;
+  letter-spacing: 0.25rem;
+}
+
+h2 {
+  font-family: "Instrument Serif", serif;
+  font-weight: normal;
+  font-size: 2rem;
+  margin-top: -1rem;
+  margin-bottom: 2rem;
+  letter-spacing: -0.012rem;
+}
+
+.base {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.base__top {
+  display: flex;
+  flex-direction: row;
+  align-items: end;
+}
+
+.side {
+  display: flex;
+  flex-direction: row;
+  align-items: start;
+}
+.middle {
+  width: 24rem;
+}
+.middle__top {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: 28rem;
+  border-radius: 2.5rem 2.5rem 0 0;
+  background: linear-gradient(
+    180deg,
+    #453d2e 41.33%,
+    #554635 41.34%,
+    #010101 71.62%,
+    #3d2b1d 71.63%
+  );
+  z-index: 3;
+  margin: 0 auto;
+}
+.middle__bottom {
+  width: 100%;
+  height: 4rem;
+  background: linear-gradient(
+      0deg,
+      rgba(0, 0, 0, 0.2) 0%,
+      rgba(0, 0, 0, 0.2) 100%
+    ),
+    #4e4232;
+}
+
+/* entire container, keeps perspective */
+.cards__list {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 90%;
+  margin-top: 3rem;
+}
+.cards,
+.card {
+  perspective: 1000px;
+}
+/* flip the pane when hovered */
+.card:hover .card__container,
+.card.hover .card__container {
+  transform: rotateY(180deg);
+}
+
+.card,
+.card__front,
+.card__back {
+  width: 100%;
+  height: 180px;
+}
+
+.vertical.card {
+  position: relative;
+}
+
+.vertical .card__back {
+  transform: rotateX(180deg);
+}
+
+.vertical.last .card__container {
+  transform: rotateX(-180deg);
+}
+
+.vertical.card .card__container {
+  transform-origin: 100% 180px; /* half of height */
+}
+
+.vertical.card:hover .card__container {
+  transform: rotateX(-180deg);
+}
+
+/* flip speed goes here */
+.card__container {
+  transition: 0.6s;
+  transform-style: preserve-3d;
+
+  position: relative;
+}
+
+/* hide back of pane during swap */
+.card__front,
+.card__back {
+  backface-visibility: hidden;
+
+  border-radius: 0.5rem;
+  background-color: white;
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+/* front pane, placed above back */
+.card__front {
+  z-index: 2;
+  /* for firefox 31 */
+  transform: rotateY(0deg);
+}
+
+/* back, initially hidden pane */
+.card__back {
+  transform: rotateY(180deg);
+  background-color: #e3e2e8;
+}
+
+.knob {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 0;
+  margin: 0.75rem 0 0 0;
+}
+.knob--right {
+  flex-direction: row-reverse;
+}
+
+.knob__dial {
+  display: flex;
+  width: 2rem;
+  height: 9.5rem;
+  zp-index: 3;
+  border-radius: 0.375rem;
+  overflow: hidden;
+}
+.knob__dial:before {
+  content: "";
+  display: block;
+  width: 100%;
+  height: 100%;
+  z-index: 4;
+  background: url("assets/img/knob-dial-texture.png");
+  background-size: 4px 4px;
+}
+.knob__dial__glimpse {
+  position: relative;
+  top: 0;
+  right: 0;
+  display: block;
+  height: 100%;
+  width: 2px;
+  background: linear-gradient(
+    180deg,
+    #a1a048 5.77%,
+    #bab953 16.83%,
+    #e1dd81 65.87%,
+    #32351f 100%
+  );
+}
+.knob__shaft {
+  background-color: #999;
+  width: 0.5rem;
+  height: 6rem;
+}
+
+.knob--left .knob__dial {
+  background: linear-gradient(
+    180deg,
+    #a1a048 5.77%,
+    #bab953 16.83%,
+    #edebc4 29.81%,
+    #d2cb77 52.4%,
+    #b9b481 77.88%,
+    #595607 92.79%,
+    #696116 100%
+  );
+}
+
+.knob--left .knob__shaft {
+  background: linear-gradient(
+    180deg,
+    #95935a 0%,
+    #696036 3.85%,
+    #9c9c67 9.62%,
+    #3c350c 16.83%,
+    #7b7a5b 16.84%,
+    #5a592e 69.68%,
+    #575715 76.42%,
+    #969468 76.43%,
+    #1e1812 86.06%
+  );
+}
+
+.knob--right .knob__dial {
+  background: linear-gradient(
+    180deg,
+    #bab66d 1.32%,
+    #edebbe 9.87%,
+    #847d20 32.89%,
+    #bab953 57.89%,
+    #403c00 94.74%,
+    #696116 100%
+  );
+}
+
+.knob--right .knob__shaft {
+  background: linear-gradient(
+    180deg,
+    #95935a 0%,
+    #696036 3.85%,
+    #bdbd5f 9.62%,
+    #3c350c 16.83%,
+    #9c9b4e 16.84%,
+    #838230 69.68%,
+    #615e19 72.6%,
+    #3e3d02 73.8%,
+    #d8d594 76.43%,
+    #575715 76.44%,
+    #1e1812 86.06%
+  );
+}
+
+.arm {
+  display: flex;
+  flex-direction: column;
+  justify-content: end;
+  width: 2rem;
+  height: 22rem;
+  background-color: #555;
+  overflow: hidden;
+}
+.arm--left {
+  border-top-left-radius: 0.5rem;
+  border-top-right-radius: 0.25rem;
+  border-bottom-left-radius: 2rem;
+  background: linear-gradient(
+    180deg,
+    #c1bb76 0%,
+    #cdc966 11.06%,
+    #c2bc7c 43.27%,
+    #b1ad76 59.13%,
+    #c5c07e 79.81%,
+    #c9c391 100%
+  );
+}
+.arm--left .arm__bottom {
+  background-color: #868046;
+}
+
+.arm--right {
+  border-top-right-radius: 0.5rem;
+  border-top-left-radius: 0.25rem;
+  border-bottom-right-radius: 2rem;
+  background: linear-gradient(
+    180deg,
+    #d2ccb2 0%,
+    #c7c254 3.37%,
+    #ece8ba 18.27%,
+    #e4e2a8 59.13%,
+    #faf9e9 79.81%,
+    #e5e4a7 100%
+  );
+}
+.arm--right .arm__bottom {
+  background-color: #8f8949;
+}
+.arm__bottom {
+  height: 4rem;
+}
