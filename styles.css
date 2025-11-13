@@ -233,6 +233,15 @@ h2 {
   transform: rotateX(-180deg);
 }
 
+/* scroll-based flip transforms */
+.card.scroll-down .card__container {
+  transform: rotateX(-180deg);
+}
+
+.card.scroll-up .card__container {
+  transform: rotateX(0deg);
+}
+
 /* flip speed goes here */
 .card__container {
   transition: 0.3s cubic-bezier(0.33, 1, 0.68, 1);

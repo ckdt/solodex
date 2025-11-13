@@ -96,6 +96,32 @@
   <script>
     // set current year
     document.getElementById('year').textContent = new Date().getFullYear();
+
+    // card scroll flip functionality
+    let scrollVelocity = 0;
+    const cards = document.querySelectorAll('.card');
+    
+    document.addEventListener('wheel', (e) => {
+      e.preventDefault();
+      
+      // positive deltaY = scroll down, negative = scroll up
+      scrollVelocity = e.deltaY;
+      
+      cards.forEach(card => {
+        const container = card.querySelector('.card__container');
+        
+        // scroll down = flip down (rotateX positive), scroll up = flip up (rotateX negative)
+        if (scrollVelocity > 0) {
+          // scroll down
+          card.classList.remove('scroll-up');
+          card.classList.add('scroll-down');
+        } else if (scrollVelocity < 0) {
+          // scroll up
+          card.classList.remove('scroll-down');
+          card.classList.add('scroll-up');
+        }
+      });
+    }, { passive: false });
   </script>
 </body>
 </html>
