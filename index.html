@@ -78,155 +78,174 @@
   </footer>
 
   <script>
-    // Contact data
+    // Contact data (10 sample entries)
     const contactsData = [
-      {
-        name: 'Ronny Wieckardt',
-        title: 'Digital Designer',
-        email: 'ronny@allthis.digital',
-        website: 'allthis.digital',
-        websiteUrl: 'https://allthis.digital',
-        notes: 'Creative director & interaction designer'
-      },
-      {
-        name: 'Jane Smith',
-        title: 'Product Manager',
-        email: 'jane@example.com',
-        website: 'example.com',
-        websiteUrl: 'https://example.com',
-        notes: 'Leading product innovation'
-      },
-      {
-        name: 'John Developer',
-        title: 'Full Stack Engineer',
-        email: 'john@example.com',
-        website: 'johndeveloper.dev',
-        websiteUrl: 'https://johndeveloper.dev',
-        notes: 'Building scalable solutions'
-      }
+      { name: 'Ronny Wieckardt', title: 'Digital Designer', email: 'ronny@allthis.digital', website: 'allthis.digital', websiteUrl: 'https://allthis.digital', notes: 'Creative director & interaction designer' },
+      { name: 'Jane Smith', title: 'Product Manager', email: 'jane@example.com', website: 'example.com', websiteUrl: 'https://example.com', notes: 'Leading product innovation' },
+      { name: 'John Developer', title: 'Full Stack Engineer', email: 'john@example.com', website: 'johndeveloper.dev', websiteUrl: 'https://johndeveloper.dev', notes: 'Building scalable solutions' },
+      { name: 'Alice Parker', title: 'UX Researcher', email: 'alice@example.com', website: 'aliceux.io', websiteUrl: 'https://aliceux.io', notes: 'User research & testing' },
+      { name: 'David Kim', title: 'Visual Designer', email: 'david@example.com', website: 'dkdesigns.com', websiteUrl: 'https://dkdesigns.com', notes: 'Branding and illustration' },
+      { name: 'Maria Lopez', title: 'Engineer', email: 'maria@example.com', website: 'marialo.dev', websiteUrl: 'https://marialo.dev', notes: 'Frontend engineer' },
+      { name: 'Tom Baker', title: 'DevOps', email: 'tom@example.com', website: 'tomb.io', websiteUrl: 'https://tomb.io', notes: 'Infrastructure & CI/CD' },
+      { name: 'Zoe Chen', title: 'Data Scientist', email: 'zoe@example.com', website: 'zoe.ai', websiteUrl: 'https://zoe.ai', notes: 'ML & analytics' },
+      { name: 'Liam Brown', title: 'QA Lead', email: 'liam@example.com', website: 'liamtest.com', websiteUrl: 'https://liamtest.com', notes: 'Quality assurance' },
+      { name: 'Nina Rossi', title: 'Content Strategist', email: 'nina@example.com', website: 'ninarossi.com', websiteUrl: 'https://ninarossi.com', notes: 'Content & editorial' }
     ];
 
-    // Generate cards from JSON data
-    function renderCards(contacts) {
-      const cardsList = document.querySelector('.cards__list');
-      cardsList.innerHTML = '';
-      
-      contacts.forEach((contact, index) => {
-        const card = document.createElement('div');
-        card.className = 'card vertical';
-        card.ontouchstart = function() { this.classList.toggle('hover'); };
-        
-        card.innerHTML = `
-          <div class="card__container">
-            <div class="card__front">
-              <p><strong>${contact.name}</strong></p>
-              <p>${contact.title}</p>
-              <p>
-                <a href="mailto:${contact.email}">${contact.email}</a><br />
-                <a href="${contact.websiteUrl}">${contact.website}</a>
-              </p>
-            </div>
-            <div class="card__back">
-              <p><strong>${contact.name}</strong></p>
-              <p>${contact.notes}</p>
-            </div>
+    let currentIndex = 0; // index of the top/front card
+    let isAnimating = false;
+    let topCard = null;
+    let bottomCard = null;
+
+    function createCardElement(contact, role) {
+      const card = document.createElement('div');
+      card.className = `card vertical card--${role}`;
+
+      card.innerHTML = `
+        <div class="card__container">
+          <div class="card__front">
+            <p><strong>${contact.name}</strong></p>
+            <p>${contact.title}</p>
+            <p>
+              <a href="mailto:${contact.email}">${contact.email}</a><br />
+              <a href="${contact.websiteUrl}">${contact.website}</a>
+            </p>
           </div>
-        `;
-        
-        // position stacked cards with slight vertical offset and set z-index
-        card.style.top = `${index * 8}px`;
-        card.style.zIndex = `${contacts.length - index}`;
+          <div class="card__back">
+            
+           <!-- <p><strong>${contact.name}</strong></p>
+            <p>${contact.notes}</p>-->
+          </div>
+        </div>
+      `;
 
-        // store index for reference
-        card.dataset.index = index;
-
-        cardsList.appendChild(card);
-      });
-      
-      // Re-attach scroll event listener to new cards and ensure initial state
-      attachScrollListener();
+      return card;
     }
 
-    // Attach scroll event listener and implement rolodex rotation
-    function attachScrollListener() {
+    function renderTwoSlots(index) {
       const cardsList = document.querySelector('.cards__list');
-      let isAnimating = false;
+      cardsList.innerHTML = '';
 
-      // remove any previous handler then attach
-      document.removeEventListener('wheel', wheelHandler);
-      document.addEventListener('wheel', wheelHandler, { passive: false });
+      const n = contactsData.length;
+      const topContact = contactsData[index];
+      // create top card
+      topCard = createCardElement(topContact, 'top');
+      topCard.style.top = `0rem`;
+      topCard.style.zIndex = 2;
+      cardsList.appendChild(topCard);
 
-      function wheelHandler(e) {
+      // create bottom card if we're NOT at the last card
+      if (index < n - 1) {
+        const bottomContact = contactsData[index + 1];
+        bottomCard = createCardElement(bottomContact, 'bottom');
+        bottomCard.style.top = `1rem`;
+        bottomCard.style.zIndex = 1;
+        cardsList.appendChild(bottomCard);
+      } else {
+        bottomCard = null;
+      }
+      
+      // always set height to show both cards (or just top if no bottom)
+      cardsList.style.height = bottomCard 
+        ? `calc(var(--card-height) + var(--slot-gap))` 
+        : `var(--card-height)`;
+    }
+
+    function attachScrollDownOnly() {
+      // clear previous handler and attach to document (entire page)
+      document.removeEventListener('wheel', rolodexWheel);
+      document.addEventListener('wheel', rolodexWheel, { passive: false });
+
+      function rolodexWheel(e) {
         e.preventDefault();
         if (isAnimating) return;
 
         const delta = e.deltaY;
         if (delta > 0) {
-          // scroll down -> flip top card away and move it to bottom
-          const topCard = cardsList.querySelector('.card');
-          if (!topCard) return;
-          isAnimating = true;
-          topCard.classList.add('scroll-down');
+          // scroll down — flip top away, flip bottom into front
+          // if there's no bottom card (first card), do nothing
+          if (!bottomCard) return;
 
-          const container = topCard.querySelector('.card__container');
-          const onEnd = (ev) => {
-            if (ev.target !== container) return;
-            container.removeEventListener('transitionend', onEnd);
-            // reset state and move card to bottom
-            topCard.classList.remove('scroll-down');
-            cardsList.appendChild(topCard);
-            // reflow positions
-            updateStackPositions();
-            isAnimating = false;
+          isAnimating = true;
+
+          topCard.classList.add('flip-away');
+          bottomCard.classList.add('flip-in');
+
+          const bottomContainer = bottomCard.querySelector('.card__container');
+
+          const onBottomEnd = (ev) => {
+            if (ev.target !== bottomContainer) return;
+            bottomContainer.removeEventListener('transitionend', onBottomEnd);
+
+            // advance index and re-render two slots
+            if (currentIndex + 1 < contactsData.length) {
+              currentIndex = currentIndex + 1;
+              renderTwoSlots(currentIndex);
+            }
+
+            // small timeout to allow DOM to settle before re-enabling
+            setTimeout(() => {
+              isAnimating = false;
+            }, 20);
           };
 
-          container.addEventListener('transitionend', onEnd);
-        } else if (delta < 0) {
-          // scroll up -> bring last card to top and flip it into view
-          const lastCard = cardsList.lastElementChild;
-          if (!lastCard) return;
+          bottomContainer.addEventListener('transitionend', onBottomEnd);
+        }
+        else if (delta < 0) {
+          // scroll up — bring previous card from above into top slot
           isAnimating = true;
+          const cardsList = document.querySelector('.cards__list');
 
-          // prepare card as pre-flipped (instant, no transition)
-          lastCard.classList.add('pre-flip');
-          // move to top
-          cardsList.prepend(lastCard);
-          updateStackPositions();
+          const n = contactsData.length;
+          if (currentIndex === 0) {
+            isAnimating = false;
+            return; // already at the first card
+          }
+          const prevIndex = currentIndex - 1;
+          const prevContact = contactsData[prevIndex];
 
-          // force reflow so the no-transition state applies
-          // then remove pre-flip to animate to front
+          const prevCard = createCardElement(prevContact, 'top');
+          // position above the top card
+          prevCard.style.top = `-1rem`;
+          prevCard.style.zIndex = 30;
+          // start pre-flipped (hidden above)
+          prevCard.classList.add('pre-flip');
+
+          // insert before current topCard
+          cardsList.insertBefore(prevCard, topCard);
+
+          // animate: flip current top downward and bring prevCard into front
           requestAnimationFrame(() => {
-            // allow transition to run by forcing reflow then removing class
             requestAnimationFrame(() => {
-              lastCard.classList.remove('pre-flip');
-              const container = lastCard.querySelector('.card__container');
-              const onEnd = (ev) => {
-                if (ev.target !== container) return;
-                container.removeEventListener('transitionend', onEnd);
-                isAnimating = false;
-              };
-              container.addEventListener('transitionend', onEnd);
+              // remove the pre-flip (no-transition) so the regular transition applies
+              prevCard.classList.remove('pre-flip');
+              // trigger the flip-in and flip-away-down
+              prevCard.classList.add('flip-in');
+              topCard.classList.add('flip-away-down');
             });
           });
+
+          const prevContainer = prevCard.querySelector('.card__container');
+          const onPrevEnd = (ev) => {
+            if (ev.target !== prevContainer) return;
+            prevContainer.removeEventListener('transitionend', onPrevEnd);
+
+            // update index and re-render
+            currentIndex = prevIndex;
+            renderTwoSlots(currentIndex);
+
+            setTimeout(() => { isAnimating = false; }, 20);
+          };
+
+          prevContainer.addEventListener('transitionend', onPrevEnd);
         }
       }
-
-      function updateStackPositions() {
-        const cards = Array.from(cardsList.querySelectorAll('.card'));
-        cards.forEach((card, idx) => {
-          card.style.top = `${idx * 8}px`;
-          card.style.zIndex = `${cards.length - idx}`;
-        });
-      }
-
-      // expose update for initial layout
-      updateStackPositions();
     }
 
-    // Initialize
     document.addEventListener('DOMContentLoaded', () => {
       document.getElementById('year').textContent = new Date().getFullYear();
-      renderCards(contactsData);
+      renderTwoSlots(currentIndex);
+      attachScrollDownOnly();
     });
   </script>
 </body>
